@@ -9,7 +9,7 @@ The following hardware is required:
 - Victron MPPT Charge Controller (like SmartSolar 100/30)
 ```
 
-Connection:
+## Connection
 
 D1 mini -> Level Shifter 3.3V / 5V
 ```
