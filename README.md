@@ -22,7 +22,6 @@ Level Shifter 3.3V / 5V -> JST Port am Victron SmartSolar
 ```
 HV1 / TX0 -> 2 (TX / White)
 GND -> 4 (GND / BLack)
-D1 mini -> MAX485
 ```
 
 ![alt text](https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller/blob/main/connection-schema.png?raw=true)
