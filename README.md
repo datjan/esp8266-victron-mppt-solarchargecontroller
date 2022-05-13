@@ -51,6 +51,12 @@ Setup victron device in config.h:
 #define MPPT_100_30    // Define used Victron Device
 ```
 
+Actual Supported:
+- "MPPT 75 | 10"
+- "MPPT 75 | 15" tested with FW 1.56
+- "MPPT 100 | 20" tested with FW 1.5 / 1.56
+- "MPPT 100 | 30" tested with FW 1.59
+
 ## Upload to device
 Following files needs to be uploaded to the ESP8266 (D1 mini)
 ```
