@@ -1,28 +1,31 @@
-/*  WEMOS D1 Mini
+/*  
+ *   Inspired from https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller/blob/main/esp8266-victron-mppt-solarchargecontroller.ino
+ *   modified for Telnet instead of Software Serial
+ *   WEMOS D1 Mini
                      ______________________________
                     |   L T L T L T L T L T L T    |
                     |                              |
-                 RST|                             1|TX HSer
-                  A0|                             3|RX HSer
+                 RST|                             1|TX 
+                  A0|                             3|RX to Victron JST pin 2 via 1kΩ resistor
                   D0|16                           5|D1
                   D5|14                           4|D2
                   D6|12                    10kPUP_0|D3
-RX SSer/HSer swap D7|13                LED_10kPUP_2|D4
-TX SSer/HSer swap D8|15                            |GND
+                  D7|13                LED_10kPUP_2|D4
+                  D8|15                            |GND to Victron JST pin 4
                  3V3|__                            |5V
                        |                           |
                        |___________________________|
 
       
-         _______________        -----------------------
-        |               |      |TX0|RXI|HV |GND|RXI|TX0|  
-        |  Victron JST  |      |HV1|HV2|   |   |HV3|HV4| 
-        |_______________|      |-----------------------|
-        |YEL|WHT|RED|BLK|      | LEVEL SHIFTER 3.3V/5V |
-        | 1 | 2 | 3 | 4 |      |-----------------------|
-        |+5V|TX |RX |GND|      |LV1|LV2|   |   |LV3|LV4|
-        |___|_:::::_|___|      |TXI|RX0|LV |GND|RX0|TXI|
-                                -----------------------
+         _______________       
+        |               |       
+        |  Victron JST  |     
+        |_______________|      
+        |YEL|WHT|RED|BLK|      
+        | 1 | 2 | 3 | 4 |      
+        |+5V|TX |RX |GND|      
+        |___|_:::::_|___|      
+                               
 
 
 D1 mini -> Level Shifter 3.3V / 5V
@@ -47,11 +50,12 @@ GET http://<IPADDR>/rest
 #include <WiFiUdp.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
+#include <TelnetStream.h>
 
 #include <ESPAsyncTCP.h>          // https://github.com/me-no-dev/ESPAsyncTCP
-#include <ESPAsyncWebServer.h>    // https://github.com/me-no-dev/ESPAsyncWebServer
+#include "ESPAsyncWebServer.h"    // https://github.com/me-no-dev/ESPAsyncWebServer
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 #include "config.h"
 #include "index_page.h"
@@ -63,15 +67,16 @@ GET http://<IPADDR>/rest
 
 String devicename = "VictronSmartSolar";
 
-const char* wifi_ssid = "xxx";
-const char* wifi_password = "xxx";
+const char* wifi_ssid = "GW-FM-7390";
+const char* wifi_password = "3tr67333";
 
 //--------------------------- SETUP -------------------------------------
 
 AsyncWebServer server(80);
 
-SoftwareSerial victronSerial(rxPin, txPin);         // RX, TX Using Software Serial so we can use the hardware serial to check the ouput
+// SoftwareSerial victronSerial(rxPin, txPin);         // RX, TX Using Software Serial so we can use the hardware serial to check the ouput
                                                     // via the USB serial provided by the NodeMCU.
+                                                    
 char receivedChars[buffsize];                       // an array to store the received data
 char tempChars[buffsize];                           // an array to manipulate the received data
 char recv_label[num_keywords][label_bytes]  = {0};  // {0} tells the compiler to initalize it with 0. 
@@ -87,12 +92,12 @@ void setup() {
     
     // Open serial communications and wait for port to open:
     Serial.begin(19200);
-    victronSerial.begin(19200);
+//    victronSerial.begin(19200);
+    TelnetStream.begin();
 
     wifiInit();
     otaInit();
     serverInit();
-
     ledOff();
 }
 
@@ -100,7 +105,6 @@ void loop() {
     // Receive information on Serial from MPPT
     RecvWithEndMarker();
     HandleNewData();
-
     // Just print the values every second,
     // Add your own code here to use the data. 
     // Make sure to not used delay(X)s of bigger than 50ms,
@@ -122,8 +126,8 @@ void RecvWithEndMarker() {
     char endMarker = '\n';
     char rc;
 
-    while (victronSerial.available() > 0 && new_data == false) {
-        rc = victronSerial.read();
+    while (Serial.available() > 0 && new_data == false) {
+        rc = Serial.read();
         if (rc != endMarker) {
             receivedChars[ndx] = rc;
             ndx++;
@@ -224,9 +228,9 @@ void PrintEverySecond() {
 
 void PrintValues() {
     for (int i = 0; i < num_keywords; i++){
-        Serial.print(keywords[i]);
-        Serial.print(",");
-        Serial.println(value[i]);
+        TelnetStream.print(keywords[i]);
+        TelnetStream.print(",");
+        TelnetStream.println(value[i]);
     }
 }
 
