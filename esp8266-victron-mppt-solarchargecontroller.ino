@@ -67,8 +67,8 @@ GET http://<IPADDR>/rest
 
 String devicename = "VictronSmartSolar";
 
-const char* wifi_ssid = "GW-FM-7390";
-const char* wifi_password = "3tr67333";
+const char* wifi_ssid = "SSID";
+const char* wifi_password = "Password";
 
 //--------------------------- SETUP -------------------------------------
 
