@@ -26,33 +26,7 @@ The following hardware is required:
 ```
 
 ## Connection
-                       ______________________________
-                      |   L T L T L T L T L T L T    |
-                      |                              |
-                   RST|                             1|TX HSer
-                    A0|                             3|RX HSer
-                    D0|16                           5|D1
-                    D5|14                           4|D2
-                    D6|12                    10kPUP_0|D3
-  RX SSer/HSer swap D7|13                LED_10kPUP_2|D4
-  TX SSer/HSer swap D8|15                            |GND
-                   3V3|__                            |5V
-                         |                           |
-                         |___________________________|
-
-
-         _______________       
-        |               |      
-        |  Victron JST  |      
-        |_______________|      
-        |YEL|WHT|RED|BLK|      
-        | 1 | 2 | 3 | 4 |      
-        |+5V|TX |RX |GND|      
-        |___|_:::::_|___|      
-                              
-
-
-  D1 mini D7 -> > LV1 / TX
+  D1 mini D7 -> > LV1 / TX  (no need for a level shifter, the Tx output of Victron is very weak and is easily clipped to 3,3V)
   GND -> GND
 
   Get values via WebUI
