@@ -1,6 +1,16 @@
+//--------------------------- CONFIG ESP -------------------------------------
+#define SCL        D1   // GPIO05 for I2C (Wire) System Clock
+#define SDA        D2   // GPIO04 for I2C (Wire) System Data
+#define LDR        A0
+#define BUTTON     D2   // GPIO04
+#define STDLED     D4   // GPIO02 
+#define REDLED     D8   // GPIO15 Tx0 after Swap
+#define GRNLED     D6   // GPIO12 
+#define BLULED     D7   // GPIO13 Rx0 after Swap
 
 
-//--------------------------- SETUP -------------------------------------
+
+//--------------------------- CONFIG VICTRON -------------------------------------
 
 #define MPPT_100_30    // Define used Victron Device
 
@@ -10,9 +20,28 @@
 // "MPPT 100 | 20" tested with FW 1.5 / 1.56
 // "MPPT 100 | 30" tested with FW 1.59
 
-//--------------------------- SETUP -------------------------------------
+//--------------------------- VICTRON DATA -------------------------------------
 
-
+/*
+PID 0xA043 -- Product ID for BlueSolar 
+FW 119 -- Firmware version of controller, v1.19
+SER# HQXXXXXXXXX -- Serial number
+V 13790 -- Battery voltage, mV
+I -10 -- Battery current, mA
+VPV 15950 -- Panel voltage, mV
+PPV 0 -- Panel power, W
+CS 5 -- Charge state, 0 to 9
+ERR 0 -- Error code, 0 to 119
+LOAD ON -- Load output state, ON/OFF
+IL 0 -- Load current, mA
+H19 0 -- Yield total, kWh
+H20 0 -- Yield today, kWh
+H21 397 -- Maximum power today, W
+H22 0 -- Yield yesterday, kWh
+H23 0 -- Maximum power yesterday, W
+HSDS 0 -- Day sequence number, 0 to 365
+Checksum l:A0002000148 -- Message checksum
+ */
 
 // MPPT 75 | 10
 #ifdef MPPT_75_10
