@@ -1,74 +1,41 @@
 # esp8266-victron-mppt-solarchargecontroller
-This is a online information server with rest api based on esp8266 and Victron Solar MPPT Solar Charge Controller
+
+This is a modification of the online information server with rest api based on esp8266 and Victron Solar MPPT Solar Charge Controller
+from https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller.
+
+This version does not use SoftwareSerial. 
+instead, the serial data  incoming at d7 is read using Serial.swap(), which swiches the hardware serial UART to D7/D8
+
+Instead of using the serial port and the serial monitor, the information is routed to telnet, where the stream is printed.
+
+## Advantages of this solution: 
+- SoftwareSerial is a performance killer. Running over the hardware UART is ways faster and uses far less resources. 
+- Telnetstream is much more flexible.
+- The overal solution is 100% wireless, you don't need any connection between the computer and the Solar installation.
+- This avoids galvanic problems and is ways mor robust against thunderbolt strikes
+- You can us as many ESP devices as you want each one has its own IP and can be monitored from separate Telnet instances.
+
 
 ## Hardware
 The following hardware is required:
 ```
 - D1 mini (ESP8266)
-- Level Shifter 3.3V / 5V
+- Direct connection without level shifter
 - Victron MPPT Charge Controller (like SmartSolar 100/30)
+- Micro buck converter from battery voltage to 5V
 ```
 
 ## Connection
+  D1 mini D7 -> > LV1 / TX  (no need for a level shifter, the Tx output of Victron is very weak and is easily clipped to 3,3V)
+  GND -> GND
 
-D1 mini -> Level Shifter 3.3V / 5V
-```
-D7 / RX -> LV1 / TXI
-GND -> GND
-3V3 -> LV
-```
+  Get values via WebUI
+  http://<IPADDR>
 
-Level Shifter 3.3V / 5V -> JST Port am Victron SmartSolar
-```
-HV1 / TX0 -> 2 (TX / White)
-GND -> 4 (GND / BLack)
-```
+  Get values via JSON
+  GET http://<IPADDR>/rest
 
-![alt text](https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller/blob/main/connection-schema.png?raw=true)
+  Get report via Telnet
+  Telenet <IPADDR>
 
-## Development
-This sketch is for following development environment
 ```
-Arduino
-```
-
-Following libraries are required
-```
-https://github.com/me-no-dev/ESPAsyncTCP
-https://github.com/me-no-dev/ESPAsyncWebServer
-```
-
-## Setup
-Setup wifi in esp8266-victron-mppt-solarchargecontroller.ino:
-```
-const char* wifi_ssid = "xxx";
-const char* wifi_password = "xxx";
-```
-
-Setup victron device in config.h:
-```
-#define MPPT_100_30    // Define used Victron Device
-```
-
-Actual Supported:
-- "MPPT 75 | 10"
-- "MPPT 75 | 15" tested with FW 1.56
-- "MPPT 100 | 20" tested with FW 1.5 / 1.56
-- "MPPT 100 | 30" tested with FW 1.59
-
-## Upload to device
-Following files needs to be uploaded to the ESP8266 (D1 mini)
-```
-esp8266-victron-mppt-solarchargecontroller.ino
-index_page.h
-config.h
-```
-
-## Show info
-Access webpage on http://[IPADDR]
-![alt text](https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller/blob/main/img_webpage.png?raw=true)
-  
-  
-Access rest api on GET http://[IPADDR]/rest
-![alt text](https://github.com/datjan/esp8266-victron-mppt-solarchargecontroller/blob/main/img_restapi.png?raw=true)
-  
