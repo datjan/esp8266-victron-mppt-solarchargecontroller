@@ -1,45 +1,46 @@
-/*  WEMOS D1 Mini
-                     ______________________________
-                    |   L T L T L T L T L T L T    |
-                    |                              |
-                 RST|                             1|TX HSer
-                  A0|                             3|RX HSer
-                  D0|16                           5|D1
-                  D5|14                           4|D2
-                  D6|12                    10kPUP_0|D3
-  RX SSer/HSer swap D7|13                LED_10kPUP_2|D4
-  TX SSer/HSer swap D8|15                            |GND
-                 3V3|__                            |5V
-                       |                           |
-                       |___________________________|
+/* Victron connector ***
+         _______________
+        |               |
+        |  Victron JST  |
+        |_______________|
+        |YEL|WHT|RED|BLK|
+        | 1 | 2 | 3 | 4 |
+        |+5V|TX |RX |GND|
+        |___|_:::::_|___|
+              |
+              |
+              V . Connect directly to D7 / GPIO13
+              (don't mind the 5V level; the output is very weak and will be clipped to 3,3V anyway)
 
+*** Witty ESP8266 or Wemos D1 Pinout
 
-         _______________        -----------------------
-        |               |      |TX0|RXI|HV |GND|RXI|TX0|
-        |  Victron JST  |      |HV1|HV2|   |   |HV3|HV4|
-        |_______________|      |-----------------------|
-        |YEL|WHT|RED|BLK|      | LEVEL SHIFTER 3.3V/5V |
-        | 1 | 2 | 3 | 4 |      |-----------------------|
-        |+5V|TX |RX |GND|      |LV1|LV2|   |   |LV3|LV4|
-        |___|_:::::_|___|      |TXI|RX0|LV |GND|RX0|TXI|
-                                -----------------------
+          REST         |       TX0
+          ADC    LDR   |       RX0
+          CH_PD        |       GPIO05  D1
+  D0      GPIO16       | BTN   GPIO04  D2
+  D5      GPIO14       |       GPIO00  D3
+  D6      GPIO12 RGB-G |       GPIO02  D4 TX1
+  D7 RX0* GPIO13 RGB-B | RGB-R GPIO15  D8 TX0*
+          VCC          |       GND
 
+   after Serial.swap()
 
-  D1 mini -> Level Shifter 3.3V / 5V
-  D7 / RX -> LV1 / TXI
-  GND -> GND
-  3V3 -> LV
-
-  Level Shifter 3.3V / 5V -> JST Port am Victron SmartSolar
-  HV1 / TX0 -> 2 (TX / White)
-  GND -> 4 (GND / BLack)
-
+  Feed the Witty ESP8266 or Wemos D1 over a 12V / 5V micro buck converter
 
   Get values via WebUI
   http://<IPADDR>
 
   Get values via JSON
   GET http://<IPADDR>/rest
+
+  Get values via Telnet
+  telnet <IPADDR>
+    once connected:
+
+  Z resets the ESP
+  Q Quits telnet
+  S Swaps Serial to default/to D7+D8 (Toggle, restores Serial monitor but break Victron communication)
+
 
 */
 
@@ -80,6 +81,29 @@ char value[num_keywords][value_bytes]       = {0};  // The array that holds the 
 static byte blockindex = 0;
 bool new_data = false;
 bool blockend = false;
+
+
+//***Operating Values from Victron***
+float BatV;           // V   Battery voltage, V
+float BatI;           // I   Battery current, A
+float PanV;           // VPV Panel voltage,   V
+float PanW;           // PPV Panel power,     W
+int   ChSt;           // CS  Charge state, 0 to 9
+int   Err;            // ERR Error code, 0 to 119
+boolean LodOn ;       // LOAD ON Load output state, ON/OFF
+float LodI ;          // IL  Load Current    ,A
+float TotKWh ;        // H19 Yield total, kWh
+float TodKWh ;        // H19 Yield today, kWh
+float TodMP ;         // H21 397 Maximum power today, W
+float YesKWh ;        // H22 Yield yesterday, kWh
+float YesMP ;         // H23 Maximum power yesterday, W
+int   DaysOn ;        // HSDS Day sequence number, 0 to 365
+
+//***Operating Values derived***
+float BatW ;          //  BatV*BatI
+float PanI ;          //  PanW/PanV
+float LodW ;          //  LodI*BatV
+
 
 void setup() {
 
@@ -132,6 +156,7 @@ void loop() {
   // so make use of the same principle used in PrintEverySecond()
   // or use some sort of Alarm/Timer Library
   PrintEverySecond();
+
 }
 
 // Serial Handling
@@ -171,6 +196,7 @@ void HandleNewData() {
     //Copy it to the temp array because parseData will alter it.
     strcpy(tempChars, receivedChars);
     ParseData();
+    GatherValues();
     new_data = false;
   }
 }
@@ -238,24 +264,40 @@ void ParseData() {
   }
 }
 
-void PrintEverySecond() {
+void PrintEverySecond()
+{
   static unsigned long prev_millis;
-  if (millis() - prev_millis > 1000) {
+  if (millis() - prev_millis > 1000) 
+  {
     PrintValues();
     prev_millis = millis();
   }
 }
 
-
-void PrintValues() {
-  for (int i = 0; i < num_keywords; i++) {
+void PrintValues()
+{
+/*  for (int i = 0; i < num_keywords; i++) 
+  {
     TelnetStream.print(keywords[i]);
     TelnetStream.print(",");
     TelnetStream.println(value[i]);
-    TelnetStream.println();
   }
-//  TelnetStream.print(".");
-//  ledSwap();
+*/
+  TelnetStream.printf("BatV:%3.2f BatI:%3.2f PanV: %3.2f PanW: %3.2f, LoadI %3.2f\n", BatV, BatI, PanV, PanW, LodI);
+  //  ledSwap();
+}
+
+void GatherValues()
+{
+  for (int i = 0; i < num_keywords; i++) {
+    if (String(keywords[i]) == "V")     BatV = atof(value[i]) / 1000;
+    if (String(keywords[i]) == "I")     BatI = atof(value[i]) / 1000;
+    if (String(keywords[i]) == "VPV")   PanV = atof(value[i]) / 1000;
+    if (String(keywords[i]) == "PPV")   PanW = atof(value[i]) / 1000;
+    if (String(keywords[i]) == "IL")    LodI = atof(value[i]) / 1000;
+    if (String(keywords[i]) == "CS")    ChSt = atoi(value[i]);
+    if (String(keywords[i]) == "ERR")   Err = atoi(value[i]);
+  }
 }
 
 
