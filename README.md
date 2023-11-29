@@ -25,12 +25,16 @@ The following hardware is required:
 - Micro buck converter from battery voltage to 5V
 ```
 
-<img width="356" alt="grafik" src="https://github.com/rin67630/esp8266-victron-mppt-solarchargecontroller-Telnet/assets/14197155/da85faf1-5c71-431e-bf9c-cdae8d8d94db">
 
 
 ## Connection
   D1 mini D7 -> > LV1 / TX  (no need for a level shifter, the Tx output of Victron is very weak and is easily clipped to 3,3V)
   GND -> GND
+  
+<img width="356" alt="grafik" src="https://github.com/rin67630/esp8266-victron-mppt-solarchargecontroller-Telnet/assets/14197155/da85faf1-5c71-431e-bf9c-cdae8d8d94db">
+There is no real need for a prototyping board, it was just used for mechanical stability.
+The schematic is also trivial:
+<img width="890" alt="grafik" src="https://github.com/rin67630/esp8266-victron-mppt-solarchargecontroller-Telnet/assets/14197155/f6731e3f-3677-4970-9e40-66e26c99adae">
 
   Get values via WebUI
   http://<IPADDR>
