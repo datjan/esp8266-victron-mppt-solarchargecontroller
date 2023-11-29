@@ -32,12 +32,16 @@ The following hardware is required:
   Get values via WebUI
   http://<IPADDR>
 
+<img width="272" alt="grafik" src="https://github.com/rin67630/esp8266-victron-mppt-solarchargecontroller-Telnet/assets/14197155/953dec1d-d859-49ed-9c09-ddd7da2ce224">
+
   Get values via JSON
   GET http://<IPADDR>/rest
 
+```
+[{"id":"PID", "value":"0xA053"},{"id":"FW", "value":"161"},{"id":"SER#", "value":"HQ21447VJME"},{"id":"V", "value":"13790"},{"id":"I", "value":"220"},{"id":"VPV", "value":"18790"},{"id":"PPV", "value":"4"},{"id":"CS", "value":"5"},{"id":"MPPT", "value":"1"},{"id":"OR", "value":"0x00000000"},{"id":"ERR", "value":"0"},{"id":"LOAD", "value":"ON"},{"id":"IL", "value":"0"},{"id":"H19", "value":"4"},{"id":"H20", "value":"0"},{"id":"H21", "value":"29"},{"id":"H22", "value":"1"},{"id":"H23", "value":"9"},{"id":"HSDS", "value":"4"},{"id":"Checksum", "value":"�"},{"id":"end", "value":"end"}]
+```
+
   Get report via Telnet
-
-
 ```
 $ telnet 192.168.188.28
 Trying 192.168.188.28...
