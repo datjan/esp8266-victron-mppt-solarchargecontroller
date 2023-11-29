@@ -20,10 +20,13 @@ Instead of using the serial port and the serial monitor, the information is rout
 The following hardware is required:
 ```
 - D1 mini (ESP8266)
-- Direct connection without level shifter
+- Direct connection without level shifter using a Grove connector.
 - Victron MPPT Charge Controller (like SmartSolar 100/30)
 - Micro buck converter from battery voltage to 5V
 ```
+
+<img width="356" alt="grafik" src="https://github.com/rin67630/esp8266-victron-mppt-solarchargecontroller-Telnet/assets/14197155/da85faf1-5c71-431e-bf9c-cdae8d8d94db">
+
 
 ## Connection
   D1 mini D7 -> > LV1 / TX  (no need for a level shifter, the Tx output of Victron is very weak and is easily clipped to 3,3V)
