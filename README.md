@@ -36,6 +36,21 @@ The following hardware is required:
   GET http://<IPADDR>/rest
 
   Get report via Telnet
-  Telenet <IPADDR>
+
 
 ```
+$ telnet 192.168.188.28
+Trying 192.168.188.28...
+Connected to esp-7b1476.fritz.box.
+Escape character is '^]'.
+BatV:13.8000 BatI:0.2100 PanV: 18.7900 PanW: 0.0030, LoadI 0.0000
+BatV:13.8000 BatI:0.2200 PanV: 18.8100 PanW: 0.0030, LoadI 0.0000
+BatV:13.8000 BatI:0.2100 PanV: 18.7900 PanW: 0.0030, LoadI 0.0000
+BatV:13.8000 BatI:0.2100 PanV: 18.8100 PanW: 0.0030, LoadI 0.0000
+
+Q
+
+bye bye
+Connection closed by foreign host.
+```
+
