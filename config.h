@@ -5,7 +5,7 @@
 #define MPPT_100_30    // Define used Victron Device
 
 // Supported:
-// "MPPT 75 | 10"
+// "MPPT 75 | 10" tested with FW 1.64
 // "MPPT 75 | 15" tested with FW 1.56
 // "MPPT 100 | 20" tested with FW 1.5 / 1.56
 // "MPPT 100 | 30" tested with FW 1.59
@@ -20,7 +20,7 @@
 	const byte buffsize = 32;
 	const byte value_bytes = 33;
 	const byte label_bytes = 9;
-	const byte num_keywords = 18;
+	const byte num_keywords = 20;
 
 	char keywords[num_keywords][label_bytes] = {
 	"PID",
@@ -31,6 +31,8 @@
 	"VPV",
 	"PPV",
 	"CS",
+	"MPPT",
+	"OR",
 	"ERR",
 	"LOAD",
 	"IL",
